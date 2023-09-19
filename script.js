@@ -52,9 +52,17 @@ const choiceQuestion = document.getElementById('question');
 const options = document.getElementById('answer-btn');
 const submitBtn = document.getElementById('submit');
 
+
+// ERROR HANDLING
+if(!choiceQuestion || !options || !submitBtn){
+    console.error("One or more required elements not found.")
+    alert("Something went wrong!!")
+} 
+
 let questionIndex = 0;
 let score = 0;
 
+//Quiz Starts here 
 function startQuiz(){
     questionIndex = 0;
     score = 0;
@@ -62,13 +70,14 @@ function startQuiz(){
     showQuestion();
 }
 
+// This function takes objects from the array and displays them
 function showQuestion(){
     resetQuiz()
-    let currentQuestionIndex = questions[questionIndex];
+    let currentQuestion = questions[questionIndex];
     let questionNumber = questionIndex + 1;
-    choiceQuestion.innerHTML = questionNumber + ". " + currentQuestionIndex.question;
+    choiceQuestion.innerHTML = questionNumber + ". " + currentQuestion.question;
     
-    currentQuestionIndex.answers.forEach(answer =>{
+    currentQuestion.answers.forEach(answer =>{
         const button = document.createElement('button');
         button.innerHTML = answer.text;
         button.classList.add("btn");
@@ -78,6 +87,8 @@ function showQuestion(){
     })
     
 }
+
+// Removes previous question and buttons
 function resetQuiz(){
     submitBtn.style.display = "none";
     while(options.firstChild){
@@ -85,11 +96,13 @@ function resetQuiz(){
     }
 }
 
+// Check if the answer chosen is correct or not 
 function selectedAnswer(event){
     const chosenBtn = event.target;
     const isCorrect = chosenBtn.dataset.correct === "true";
     if(isCorrect){
         chosenBtn.classList.add('correct')
+        score++;
     }
     else{
         chosenBtn.classList.add("incorrect")
@@ -101,5 +114,34 @@ function selectedAnswer(event){
         button.disabled= true
     })
     submitBtn.style.display= "block";
+    
 }
+
+function showScore(){
+    resetQuiz()     
+    choiceQuestion.innerHTML = `Your score is ${score} out of ${questions.length}`;
+    submitBtn.innerHTML = 'Play Again';
+    submitBtn.style.display = "block";
+}
+
+
+function handleNextBtn(){
+    questionIndex++;
+    if(questionIndex < questions.length){
+        showQuestion();
+    }
+    else{
+        showScore();
+    }
+}
+submitBtn.addEventListener('click', ()=>{
+    if(questionIndex < questions.length){
+        handleNextBtn()
+    }
+    else{
+        startQuiz();
+    }
+})
 startQuiz();
+
+
